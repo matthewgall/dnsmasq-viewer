@@ -4,11 +4,11 @@
 		<table class="table table-hover table-condensed sortable">
 			<thead>
 					<tr>
-						<th class="col-sm-4" data-defaultsort="asc">Hostname</th>
+						<th class="col-sm-4">Hostname</th>
 						<th class="col-sm-2">IP</th>
 						<th class="col-sm-2">Link Address</th>
 						<th class="col-sm-2">Client Identifier</th>
-						<th class="col-sm-4">Expires</th>
+						<th class="col-sm-4" data-defaultsort="asc">Expires</th>
 					</tr>
 					</thead>
 					<tbody>
@@ -31,6 +31,29 @@
 							% end
 					</tbody>
 		</table>
-		<small>Data delayed by 5 minutes</small>
+
+		% if staticHosts != []:
+		<h2>Static Allocations</h2>
+		<table class="table table-hover table-condensed sortable">
+			<thead>
+					<tr>
+						<th class="col-sm-6" data-defaultsort="desc">IP</th>
+						<th class="col-sm-6">Hostname</th>
+					</tr>
+					</thead>
+					<tbody>
+							% for static in staticHosts:
+							<tr>
+								<td>
+									{{static['ip']}}
+								</td>
+								<td>{{static['hostname']}}</td>
+							</tr>
+							% end
+					</tbody>
+		</table>
+		% end
+
+		<small>Data is delayed, and cached for 5 minutes</small>
 </div>
 % include('footer.tpl')

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import sys, os, logging, json, datetime, time, requests
+import sys, os, logging, json, datetime, time, re, requests
 from bottle import route, request, response, redirect, hook, error, default_app, view, static_file, template, HTTPError
 from beaker.cache import CacheManager
 from beaker.util import parse_cache_config_options
@@ -36,6 +36,21 @@ def fetch(path=os.getenv('DNSMASQ_LEASES', '/var/lib/misc/dnsmasq.leases')):
 			})
 		return data
 
+def fetch_static(path=os.getenv('DNSMASQ_STATIC', '')):
+	if path == '':
+		return []
+	else:
+		data = []
+		for file in path.split(','):	
+			with open(file, 'r') as f:
+				for line in f.readlines():
+					line = re.sub(' +',' ', line).split(' ')
+					data.append({
+						'ip': line[0],
+						'hostname': line[1].strip(),
+					})
+		return data
+
 @route('/static/<filepath:path>')
 def server_static(filepath):
 	return static_file(filepath, root='views/static')
@@ -43,7 +58,8 @@ def server_static(filepath):
 @route('/')
 def index():
 	results = cache.get(key='leases', createfunc=fetch)
-	return template('index', leases=results)
+	staticHosts = cache.get(key='static', createfunc=fetch_static)
+	return template('index', leases=results, staticHosts=staticHosts)
 
 if __name__ == '__main__':
 	app = default_app()
@@ -54,7 +70,7 @@ if __name__ == '__main__':
 		'cache.lock_dir': 'cache/lock'
 	}
 	cacheMgr = CacheManager(**parse_cache_config_options(cache_opts))
-	cache = cacheMgr.get_cache('data', expire=300)
+	cache = cacheMgr.get_cache('data')
 
 	serverHost = os.getenv('IP', 'localhost')
 	serverPort = os.getenv('PORT', '5000')
