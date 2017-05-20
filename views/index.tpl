@@ -18,7 +18,15 @@
 									% if lease['hostname'] == "*":
 										None
 									% elif lease['webui'] == True:
-										<a href="http://{{lease['hostname']}}" target="_blank">{{lease['hostname']}}</a>
+										% if lease['port'] == 80:
+											<a href="http://{{lease['hostname']}}" target="_blank">
+												{{lease['hostname']}}
+											</a>
+										% else:
+											<a href="http://{{lease['hostname']}}:{{lease['port']}}" target="_blank">
+													{{lease['hostname']}}
+											</a>
+										% end
 									% else:
 										{{lease['hostname']}}
 									% end

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import sys, os, logging, json, datetime, time, re, requests
+import sys, os, logging, json, datetime, time, re, socket
 from bottle import route, request, response, redirect, hook, error, default_app, view, static_file, template, HTTPError
 from beaker.cache import CacheManager
 from beaker.util import parse_cache_config_options
@@ -16,15 +16,21 @@ def fetch(path=os.getenv('DNSMASQ_LEASES', '/var/lib/misc/dnsmasq.leases')):
 		for line in f.readlines():
 			line = line.strip().split(' ')
 
-			# Now to test if the system has a webUI on port 80
-			try:
-				webui = requests.get("http://{}".format(line[3].lower()), timeout=1)
-				if webui.status_code == 200:
-					webui = True
-				else:
-					webui = False
-			except:
-				webui = False
+			webui = False
+			ports = [80, 8080, 8081, 8888]
+			i = 0
+			while webui == False and i < len(ports):
+				for port in ports:
+					try:
+						s = socket.socket()
+						s.settimeout(2)
+						s.connect((line[3], port))
+						webui = True
+						s.close()
+						break
+					except:
+						pass
+					i = i + 1
 
 			data.append({
 				'expires': display_time(int(line[0])),
@@ -32,7 +38,8 @@ def fetch(path=os.getenv('DNSMASQ_LEASES', '/var/lib/misc/dnsmasq.leases')):
 				'ip': line[2],
 				'hostname': line[3],
 				'clientIdent': line[4],
-				'webui': webui
+				'webui': webui,
+				'port': port
 			})
 		return data
 
