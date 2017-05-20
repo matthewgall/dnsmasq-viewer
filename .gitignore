@@ -1,0 +1,11 @@
+## virtualenv ##
+bin/
+include/
+lib/
+.Python
+pip-selfcheck.json
+
+## application specific ##
+cache/data
+cache/lock
+tests/*.leases
