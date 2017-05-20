@@ -77,7 +77,7 @@ if __name__ == '__main__':
 		'cache.lock_dir': 'cache/lock'
 	}
 	cacheMgr = CacheManager(**parse_cache_config_options(cache_opts))
-	cache = cacheMgr.get_cache('data')
+	cache = cacheMgr.get_cache('data', expires=300)
 
 	serverHost = os.getenv('IP', 'localhost')
 	serverPort = os.getenv('PORT', '5000')
