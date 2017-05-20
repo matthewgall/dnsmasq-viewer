@@ -44,7 +44,7 @@ def fetch_static(path=os.getenv('DNSMASQ_STATIC', '')):
 		for file in path.split(','):	
 			with open(file, 'r') as f:
 				for line in f.readlines():
-					line = re.sub(' +',' ', line).split(' ')
+					line = re.split('\t|\s', re.sub(' +',' ', line))
 					data.append({
 						'ip': line[0],
 						'hostname': line[1].strip(),

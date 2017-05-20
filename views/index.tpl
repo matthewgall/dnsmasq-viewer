@@ -4,11 +4,11 @@
 		<table class="table table-hover table-condensed sortable">
 			<thead>
 					<tr>
-						<th class="col-sm-4">Hostname</th>
+						<th class="col-sm-4" data-defaultsort="asc">Hostname</th>
 						<th class="col-sm-2">IP</th>
 						<th class="col-sm-2">Link Address</th>
 						<th class="col-sm-2">Client Identifier</th>
-						<th class="col-sm-4" data-defaultsort="asc">Expires</th>
+						<th class="col-sm-4">Expires</th>
 					</tr>
 					</thead>
 					<tbody>
