@@ -23,7 +23,7 @@ def fetch(path=os.getenv('DNSMASQ_LEASES', '/var/lib/misc/dnsmasq.leases')):
 				for port in ports:
 					try:
 						s = socket.socket()
-						s.settimeout(2)
+						s.settimeout(1)
 						s.connect((line[3], port))
 						webui = True
 						s.close()
