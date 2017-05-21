@@ -110,6 +110,7 @@ if __name__ == '__main__':
 
 	# Now we're ready, so start the server
 	try:
+		cache.clear()
 		app.run(host=serverHost, port=serverPort, server='tornado')
 	except:
 		log.error("Failed to start application server")
