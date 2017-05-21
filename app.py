@@ -80,7 +80,12 @@ def fetch_static(path=os.getenv('DNSMASQ_STATIC', '')):
 @route('/static/<filepath:path>')
 def server_static(filepath):
 	return static_file(filepath, root='views/static')
-	
+
+@route('/purge')
+def purge():
+	cache.clear()
+	return "Cache successfully purged"
+
 @route('/')
 def index():
 	results = cache.get(key='leases', createfunc=fetch)
