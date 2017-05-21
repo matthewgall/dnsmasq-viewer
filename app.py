@@ -10,6 +10,22 @@ def display_time(timestamp):
 		int(timestamp)
 	).strftime('%d/%m/%Y %H:%M:%S')
 
+def scanDevice(ip):
+	ports = [80, 8080, 8081, 8888]
+	i = 0
+	while i < len(ports):
+		for port in ports:
+			try:
+				s = socket.socket()
+				s.settimeout(1)
+				s.connect((ip, port))
+				s.close()
+				return port
+			except:
+				pass
+			i = i + 1
+	return False
+
 def fetch(path=os.getenv('DNSMASQ_LEASES', '/var/lib/misc/dnsmasq.leases')):
 	with open(path, 'r') as f:
 		data = []
@@ -17,20 +33,12 @@ def fetch(path=os.getenv('DNSMASQ_LEASES', '/var/lib/misc/dnsmasq.leases')):
 			line = line.strip().split(' ')
 
 			webui = False
-			ports = [80, 8080, 8081, 8888]
-			i = 0
-			while webui == False and i < len(ports):
-				for port in ports:
-					try:
-						s = socket.socket()
-						s.settimeout(1)
-						s.connect((line[3], port))
-						webui = True
-						s.close()
-						break
-					except:
-						pass
-					i = i + 1
+			port = ''
+			scanRes = scanDevice(line[3])
+
+			if scanRes != False:
+				webui = True
+				port = scanRes
 
 			data.append({
 				'expires': display_time(int(line[0])),
@@ -39,7 +47,7 @@ def fetch(path=os.getenv('DNSMASQ_LEASES', '/var/lib/misc/dnsmasq.leases')):
 				'hostname': line[3],
 				'clientIdent': line[4],
 				'webui': webui,
-				'port': port
+				'port': port,
 			})
 		return data
 
@@ -52,9 +60,20 @@ def fetch_static(path=os.getenv('DNSMASQ_STATIC', '')):
 			with open(file, 'r') as f:
 				for line in f.readlines():
 					line = re.split('\t|\s', re.sub(' +',' ', line))
+					
+					webui = False
+					port = ''
+					scanRes = scanDevice(line[0])
+
+					if scanRes != False:
+						webui = True
+						port = scanRes
+
 					data.append({
 						'ip': line[0],
 						'hostname': line[1].strip(),
+						'webui': webui,
+						'port': port,
 					})
 		return data
 

@@ -55,7 +55,23 @@
 								<td>
 									{{static['ip']}}
 								</td>
-								<td>{{static['hostname']}}</td>
+								<td>
+									% if static['hostname'] == "*":
+										None
+									% elif static['webui'] == True:
+										% if static['port'] == 80:
+											<a href="http://{{static['hostname']}}" target="_blank">
+												{{static['hostname']}}
+											</a>
+										% else:
+											<a href="http://{{static['hostname']}}:{{static['port']}}" target="_blank">
+													{{static['hostname']}}
+											</a>
+										% end
+									% else:
+										{{static['hostname']}}
+									% end
+								</td>
 							</tr>
 							% end
 					</tbody>
